@@ -3,7 +3,7 @@ Conan build script for the GNU Multiple Precision Arithmetic library (GMP)
 Build
 --
 
-`conan create gmp/6.1.2@ntc/stable -pr <profile>`
+`conan create mpfr/4.0.1@ntc/stable -pr <profile>`
 
 Notes
 --
@@ -16,4 +16,6 @@ Notes
   Conan docs.)  The `package_id()` function then makes the package appear as if
   it was build with Microsoft Visual Studio.
 
-Also see [conan-mpfr](https://github.com/kheaactua/conan-mpfr).
+See also:
+- [conan-gmp](https://github.com/kheaactua/conan-gmp).
+- [conan-build-helpers](https://github.com/kheaactua/conan-build-helpers).
