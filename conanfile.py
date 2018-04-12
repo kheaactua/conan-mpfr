@@ -11,7 +11,7 @@ class MpfrConan(ConanFile):
     url         = 'http://www.mpfr.org/mpfr-current'
     license     = 'MIT'
     settings    = 'os', 'compiler', 'arch', 'build_type'
-    requires    = 'gmp/[>=5.0.0]@ntc/stable', 'helpers/[>=0.2]@ntc/stable'
+    requires    = 'gmp/[>=5.0.0]@ntc/stable', 'helpers/0.2@ntc/stable'
 
     # See http://www.mpfr.org/mpfr-current/mpfr.pdf for other potential options
     options = {
