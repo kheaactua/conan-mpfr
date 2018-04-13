@@ -88,6 +88,7 @@ class MpfrConan(ConanFile):
     def package_id(self):
         # On windows, we cross compile this with mingw.. But because it's
         # compatible with MSVC, set it's hash to reflect that.
+        # Maybe use tools.cross_building(self.settings)
         if 'gcc' == self.settings.compiler and 'Windows' == platform.system():
             self.info.settings.compiler = 'Visual Studio'
             self.info.settings.compiler.version = int(str(self.options.msvc))
