@@ -1,4 +1,4 @@
-import os, shutil, platform, re
+import os, shutil
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 
 class MpfrConan(ConanFile):
@@ -22,7 +22,6 @@ class MpfrConan(ConanFile):
     default_options = 'shared=True', 'static=True', 'msvc=12'
 
     def source(self):
-
         archive = 'mpfr-{version}.tar.gz'.format(version=self.version)
         tools.download('http://www.mpfr.org/mpfr-current/{archive}'.format(archive=archive), archive)
         tools.check_md5(archive, self.md5hash)
@@ -31,7 +30,7 @@ class MpfrConan(ConanFile):
         os.unlink(archive)
 
     def configure(self):
-        if 'Windows' == self.settings.os:
+        if tools.os_info.is_windows:
             # On Windows, we can only build the static OR shared
             self.options.static = not self.options.shared
 
@@ -40,12 +39,12 @@ class MpfrConan(ConanFile):
 
     def build(self):
         with tools.chdir(self.name):
-            autotools = AutoToolsBuildEnvironment(self, win_bash=(platform.system() == "Windows"))
+            autotools = AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
 
             env_vars = {}
             args = []
 
-            if 'gcc' == self.settings.compiler and 'Windows' == platform.system():
+            if 'gcc' == self.settings.compiler and tools.os_info.is_windows:
                 args.append('--prefix=%s'%tools.unix_path(self.package_folder))
             else:
                 args.append('--prefix=%s'%self.package_folder)
@@ -53,7 +52,7 @@ class MpfrConan(ConanFile):
             args.append('--%s-shared'%('enable' if self.options.shared else 'disable'))
             args.append('--%s-static'%('enable' if self.options.static else 'disable'))
 
-            if self.settings.os == "Linux" or self.settings.os == "Macos":
+            if tools.os_info.is_linux or self.settings.os == "Macos":
                 autotools.fpic = True
                 if self.settings.arch == 'x86':
                     env_vars['ABI'] = '32'
@@ -74,7 +73,8 @@ class MpfrConan(ConanFile):
             autotools.make(args=['install'])
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        # For now, don't export the lib
+        # self.cpp_info.libs = tools.collect_libs(self)
 
         # Populate the pkg-config environment variables
         with tools.pythonpath(self): # Compensate for #2644
@@ -89,7 +89,7 @@ class MpfrConan(ConanFile):
         # On windows, we cross compile this with mingw.. But because it's
         # compatible with MSVC, set it's hash to reflect that.
         # Maybe use tools.cross_building(self.settings)
-        if 'gcc' == self.settings.compiler and 'Windows' == platform.system():
+        if 'gcc' == self.settings.compiler and tools.os_info.is_windows:
             self.info.settings.compiler = 'Visual Studio'
             self.info.settings.compiler.version = int(str(self.options.msvc))
 
