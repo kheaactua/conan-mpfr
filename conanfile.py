@@ -5,8 +5,8 @@ class MpfrConan(ConanFile):
     """ Building MPFR for the intention of using it to build CGAL """
 
     name        = 'mpfr'
-    version     = '4.0.1'
-    md5hash     = 'a2a6d97d890222a29d9b7683d075b97b'
+    version     = '4.0.2'
+    md5hash     = '693efa8683c2d11a48f6955e9751e862'
     description = 'The GNU Multiple Precision Arithmetic Library'
     url         = 'http://www.mpfr.org/mpfr-current'
     license     = 'MIT'
@@ -22,9 +22,12 @@ class MpfrConan(ConanFile):
     default_options = 'shared=True', 'static=True', 'msvc=12'
 
     def source(self):
+        from source_cache import copyFromCache
+
         archive = 'mpfr-{version}.tar.gz'.format(version=self.version)
-        tools.download('http://www.mpfr.org/mpfr-current/{archive}'.format(archive=archive), archive)
-        tools.check_md5(archive, self.md5hash)
+        if not copyFromCache(archive):
+            tools.download('http://www.mpfr.org/mpfr-current/{archive}'.format(archive=archive), archive)
+            tools.check_md5(archive, self.md5hash)
         tools.unzip(archive)
         shutil.move('mpfr-{version}'.format(version=self.version), self.name)
         os.unlink(archive)
@@ -83,7 +86,8 @@ class MpfrConan(ConanFile):
             self.env_info.PKG_CONFIG_MPFR_PREFIX = adjustPath(self.package_folder)
             appendPkgConfigPath(adjustPath(os.path.join(self.package_folder, 'lib', 'pkgconfig')), self.env_info)
 
-        self.cpp_info.libs = tools.collect_libs(self)
+        # Do not run collect_libs, as this will lead to conan looking for an
+        # mpfr.lib during the install which doesn't exist
 
     def package_id(self):
         # On windows, we cross compile this with mingw.. But because it's
