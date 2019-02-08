@@ -83,7 +83,7 @@ class MpfrConan(ConanFile):
             self.env_info.PKG_CONFIG_MPFR_PREFIX = adjustPath(self.package_folder)
             appendPkgConfigPath(adjustPath(os.path.join(self.package_folder, 'lib', 'pkgconfig')), self.env_info)
 
-        self.cpp_info.libs = tools.collect_libs(self)
+        # self.cpp_info.libs = tools.collect_libs(self)
 
     def package_id(self):
         # On windows, we cross compile this with mingw.. But because it's
